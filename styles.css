@@ -128,6 +128,35 @@ body {
   padding: 4px;
 }
 
+/* Remove circle and background for image icons in navbar */
+.navbar img.icon, .navbar .icon img {
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Make home icon a little smaller */
+.navbar .home-icon {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Zoom effect for selected home icon */
+.navbar .home-icon.active {
+  transform: scale(1.15) !important;
+  transition: transform 0.18s !important;
+}
+
+/* Prevent active state styling for image icons in navbar */
+.navbar img.icon.active, .navbar .icon img.active {
+  opacity: 0.8 !important;
+  background: none !important;
+  box-shadow: none !important;
+  /* Do not override transform here so .home-icon.active can zoom */
+  filter: none !important;
+}
+
 .navbar .icon.active {
   opacity: 1;
   fill: #222;
@@ -400,6 +429,14 @@ body {
 }
 .post-actions .icon:active {
   fill: #222;
+}
+
+/* Ensure liked heart icon in post card is red and not filtered */
+.post-actions .post-action-btn img[src*="heartselected"],
+.post-actions img.icon[src*="heartselected"] {
+  filter: none !important;
+  opacity: 1 !important;
+  fill: initial !important;
 }
 
 .post-likes {

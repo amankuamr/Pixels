@@ -507,10 +507,10 @@ function renderApp() {
         }}>Pixels</span>
         <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
           <button onClick={() => window.location.href = 'add_people.html'} style={{background:'none', border:'none', cursor:'pointer'}} title="Add Friends">
-            <svg className="icon" viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-7 8c0-2.67 5.33-4 8-4s8 1.33 8 4v2H8v-2zm-2-7V9H3V7h3V4h2v3h3v2H8v3H6z" fill="#262626"/></svg>
+            <img src="images/navbar/user-add.png" alt="Add Friends" style={{width: 24, height: 24, objectFit: 'contain', display: 'block'}} />
           </button>
           <button onClick={onSignOut} style={{background:'none', border:'none', cursor:'pointer'}} title="Sign Out">
-            <svg className="icon" viewBox="0 0 24 24" width="26" height="26"><path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3h-8c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4h-2v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+            <img src="images/navbar/sign-out-alt.png" alt="Sign Out" style={{width: 24, height: 24, objectFit: 'contain', display: 'block', filter: 'invert(18%) sepia(99%) saturate(7492%) hue-rotate(-7deg) brightness(97%) contrast(119%)'}} />
           </button>
         </div>
       </div>
@@ -521,10 +521,20 @@ function renderApp() {
     return (
       <div className="navbar">
         <span onClick={() => setPage('home')} title="Home">
-          <svg className={`icon${page==='home'?' active':''}`} viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <img 
+            src={page==='home' ? "images/navbar/homeselected.png" : "images/navbar/home.png"} 
+            alt="Home" 
+            className={`icon home-icon${page==='home'?' active':''}`} 
+            style={{ objectFit: 'contain', display: 'block', margin: '0 auto', filter: page==='home' ? 'drop-shadow(0 0 4px #6c47ff)' : 'none', transform: page==='home' ? 'scale(1.15)' : 'none', transition: 'transform 0.18s' }}
+          />
         </span>
         <span onClick={() => setPage('search')} title="Search">
-          <svg className={`icon${page==='search'?' active':''}`} viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <img
+            src={page==='search' ? "images/navbar/searchselected.png" : "images/navbar/search.png"}
+            alt="Search"
+            className={`icon home-icon search-icon${page==='search'?' active':''}`}
+            style={{ objectFit: 'contain', display: 'block', margin: '0 auto', filter: page==='search' ? 'drop-shadow(0 0 4px #6c47ff)' : 'none' }}
+          />
         </span>
         <span className="plus-icon-wrapper" title="Create" onClick={onPlus}>
           <svg className="plus-icon" viewBox="0 0 56 56" width="56" height="56" fill="none" style={{display:'block',margin:'auto'}}>
@@ -532,137 +542,306 @@ function renderApp() {
           </svg>
         </span>
         <span onClick={() => setPage('activity')} title="Activity">
-          <svg className={`icon${page==='activity'?' active':''}`} viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <img
+            src={page==='activity' ? "images/navbar/heartselected.png" : "images/navbar/heart.png"}
+            alt="Activity"
+            className={`icon home-icon heart-icon${page==='activity'?' active':''}`}
+            style={{ objectFit: 'contain', display: 'block', margin: '0 auto', filter: page==='activity' ? 'drop-shadow(0 0 4px #6c47ff)' : 'none' }}
+          />
         </span>
         <span onClick={() => setPage('profile')} title="Profile">
-          <svg className={`icon${page==='profile'?' active':''}`} viewBox="0 0 24 24"><path d="M12 12c2.7 0 8 1.34 8 4v2H4v-2c0-2.66 5.3-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z"/></svg>
+          <img
+            src={page==='profile' ? "images/navbar/userselected.png" : "images/navbar/user.png"}
+            alt="Profile"
+            className={`icon home-icon user-icon${page==='profile'?' active':''}`}
+            style={{ objectFit: 'contain', display: 'block', margin: '0 auto', filter: page==='profile' ? 'drop-shadow(0 0 4px #6c47ff)' : 'none' }}
+          />
         </span>
       </div>
     );
   }
 
-  function HomePage({ user, posts, loading }) {
-    const db = window.firebase.firestore();
-    if (loading) return <div style={{padding:32, textAlign:'center', color:'#888'}}>Loading feed...</div>;
-    if (!posts.length) return <div style={{padding:32, textAlign:'center', color:'#888'}}>No posts yet.</div>;
-
-    // Like/unlike logic
-    async function handleLike(post) {
-      const userId = user.uid;
-      const postRef = db.collection('posts').doc(post.id);
-      const alreadyLiked = post.likesArr && post.likesArr.includes(userId);
-      if (alreadyLiked) {
-        // Unlike
-        await postRef.update({
-          likesArr: window.firebase.firestore.FieldValue.arrayRemove(userId),
-          likes: (post.likes || 0) - 1
-        });
-      } else {
-        // Like
-        await postRef.update({
-          likesArr: window.firebase.firestore.FieldValue.arrayUnion(userId),
-          likes: (post.likes || 0) + 1
-        });
+  // Comment Modal as bottom sheet (move outside HomePage)
+function CommentModal({ post, onClose, onCommentAdded }) {
+  const isMobile = window.innerWidth <= 600;
+  // Lock background scroll when modal is open
+  React.useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+  // Assume nav bar is about 56px tall, so leave space for it
+  const navBarHeight = 56;
+  const modalStyle = isMobile
+    ? {
+        position: 'fixed',
+        left: 0,
+        top: 'auto',
+        bottom: 0,
+        width: '100vw',
+        height: '70vh',
+        background: '#fff',
+        borderTopLeftRadius: 18,
+        borderTopRightRadius: 18,
+        boxShadow: '0 -8px 32px 0 rgba(96, 71, 255, 0.25), 0 2px 8px 0 rgba(0,0,0,0.10)',
+        zIndex: 2000,
+        animation: 'slideUpComment 0.35s cubic-bezier(.4,0,.2,1)',
+        display: 'flex',
+        flexDirection: 'column',
       }
-    }
+    : {
+        position: 'fixed',
+        left: '50%',
+        top: 'auto',
+        bottom: 0,
+        width: 430,
+        maxWidth: '100vw',
+        transform: 'translateX(-50%)',
+        height: '70vh',
+        background: '#fff',
+        borderTopLeftRadius: 18,
+        borderTopRightRadius: 18,
+        boxShadow: '0 -8px 32px #a084e822',
+        zIndex: 2000,
+        animation: 'slideUpComment 0.35s cubic-bezier(.4,0,.2,1)',
+        display: 'flex',
+        flexDirection: 'column',
+      };
 
-    const [menuOpenIdx, setMenuOpenIdx] = useState(null);
-    const [menuPosition, setMenuPosition] = useState({top: 0, left: 0});
-    // Helper to render dropdown as a portal
-    function DropdownPortal({ children }) {
-      React.useEffect(() => {
-        // Prevent scrolling when menu is open
-        document.body.style.overflow = menuOpenIdx !== null ? 'hidden' : '';
-        return () => { document.body.style.overflow = ''; };
-      }, [menuOpenIdx]);
-      return ReactDOM.createPortal(children, document.body);
+  const [comments, setComments] = React.useState([]);
+  const [newComment, setNewComment] = React.useState("");
+  const [loading, setLoading] = React.useState(true);
+  const user = window.firebase.auth().currentUser;
+  const db = window.firebase.firestore();
+
+  // Fetch comments in real time
+  React.useEffect(() => {
+    const unsubscribe = db
+      .collection("posts")
+      .doc(post.id)
+      .collection("comments")
+      .orderBy("createdAt", "asc")
+      .onSnapshot((snapshot) => {
+        const fetched = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setComments(fetched);
+        setLoading(false);
+        if (onCommentAdded) onCommentAdded(post.id, fetched.length);
+      });
+    return unsubscribe;
+  }, [post.id]);
+
+  async function handleAddComment(e) {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    const userData = userDoc.data() || {};
+    await db
+      .collection("posts")
+      .doc(post.id)
+      .collection("comments")
+      .add({
+        text: newComment,
+        createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+        userId: user.uid,
+        username: userData.username || user.email.split("@")[0],
+        name: userData.name || user.displayName || user.email.split("@")[0],
+        photoURL: userData.photoURL || user.photoURL || "https://randomuser.me/api/portraits/men/32.jpg",
+      });
+    setNewComment("");
+    if (onCommentAdded) {
+      const snapshot = await db.collection("posts").doc(post.id).collection("comments").get();
+      onCommentAdded(post.id, snapshot.size);
     }
-    return (
-      <div>
-        {posts.map((post, idx) => {
-          const liked = post.likesArr && post.likesArr.includes(user.uid);
-          const isOwner = post.userid === (user.email ? user.email.split('@')[0] : user.uid);
-          return (
-            <div className="post" key={post.id} style={{position:'relative', overflow:'visible', zIndex:0}}>
-              <div className="post-header" style={{justifyContent:'space-between', position:'relative', zIndex:0}}>
-                <div style={{display:'flex',alignItems:'center'}}>
-                  <img src={post.avatar} alt={post.username} />
-                  <div>
-                    <div style={{fontWeight:600, fontSize:17, marginBottom:2}}>{post.username} <span style={{color:'#888',fontWeight:400,fontSize:13}}>@{post.userid}</span></div>
-                    <div style={{color:'#888',fontSize:13,marginTop:1}}>{post.location}</div>
+  }
+
+  return (
+    <div style={modalStyle}>
+      <button onClick={onClose} style={{alignSelf:'flex-end',margin:'12px 18px 0 0',background:'none',border:'none',fontSize:22,cursor:'pointer',color:'#a084e8'}} title="Close">×</button>
+      <div style={{padding:'0 24px',flex:1,display:'flex',flexDirection:'column',height:'100%'}}>
+        <div style={{textAlign:'center',fontWeight:700,fontSize:18,letterSpacing:1,color:'#6c47ff',margin:'12px 0 18px 0'}}>Comments</div>
+        <div style={{flex:1,overflowY:'auto',paddingBottom:18}}>
+          {loading ? (
+            <div style={{color:'#888',textAlign:'center',marginTop:24}}>Loading comments...</div>
+          ) : comments.length === 0 ? (
+            <div style={{color:'#888',textAlign:'center',marginTop:24}}>No comments yet.</div>
+          ) : (
+            comments.map((c) => (
+              <div key={c.id} style={{display:'flex',alignItems:'flex-start',gap:12,marginBottom:18}}>
+                <img src={c.photoURL} alt={c.username} style={{width:36,height:36,borderRadius:'50%',objectFit:'cover',border:'2px solid #ede4ff'}} />
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:600,fontSize:15}}>{c.name} <span style={{color:'#888',fontWeight:400,fontSize:13}}>@{c.username}</span></div>
+                  <div style={{color:'#222',fontSize:15,marginTop:2}}>{c.text}</div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        {/* Add comment input fixed at bottom as flex child, with margin for nav bar */}
+        <form onSubmit={handleAddComment} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 0 8px 0',borderTop:'1px solid #eee',background:'#fff',marginBottom:navBarHeight}}>
+          <input
+            type="text"
+            value={newComment}
+            onChange={e => setNewComment(e.target.value)}
+            placeholder="Add a comment..."
+            style={{flex:1,padding:10,borderRadius:999,border:'2px solid #111',background:'transparent',color:'#111',fontSize:15,outline:'none'}}
+          />
+          <button type="submit" style={{padding:0,border:'none',background:'none',display:'flex',alignItems:'center',justifyContent:'center',height:40,width:40,cursor:'pointer'}}>
+            <img src="images/navbar/send.png" alt="Send" style={{width:28,height:28,objectFit:'contain',display:'block'}} />
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function HomePage({ user, posts, loading }) {
+  const db = window.firebase.firestore();
+  const [commentModalPost, setCommentModalPost] = useState(null);
+  const [commentCounts, setCommentCounts] = useState({});
+  const [menuOpenIdx, setMenuOpenIdx] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({top: 0, left: 0});
+  // No isMobile check, always allow modal
+  // Add keyframes for slide up
+  React.useEffect(() => {
+    if (!document.getElementById('slideUpCommentKeyframes')) {
+      const style = document.createElement('style');
+      style.id = 'slideUpCommentKeyframes';
+      style.innerHTML = `@keyframes slideUpComment { from { transform: translateY(100%); } to { transform: translateY(0); } }`;
+      document.head.appendChild(style);
+    }
+  }, []);
+  if (loading) return <div style={{padding:32, textAlign:'center', color:'#888'}}>Loading feed...</div>;
+  if (!posts.length) return <div style={{padding:32, textAlign:'center', color:'#888'}}>No posts yet.</div>;
+
+  // Like/unlike logic
+  async function handleLike(post) {
+    const userId = user.uid;
+    const postRef = db.collection('posts').doc(post.id);
+    const alreadyLiked = post.likesArr && post.likesArr.includes(userId);
+    if (alreadyLiked) {
+      // Unlike
+      await postRef.update({
+        likesArr: window.firebase.firestore.FieldValue.arrayRemove(userId),
+        likes: (post.likes || 0) - 1
+      });
+    } else {
+      // Like
+      await postRef.update({
+        likesArr: window.firebase.firestore.FieldValue.arrayUnion(userId),
+        likes: (post.likes || 0) + 1
+      });
+    }
+  }
+
+  // Helper to render dropdown as a portal
+  function DropdownPortal({ children }) {
+    React.useEffect(() => {
+      // Prevent scrolling when menu is open
+      document.body.style.overflow = menuOpenIdx !== null ? 'hidden' : '';
+      return () => { document.body.style.overflow = ''; };
+    }, [menuOpenIdx]);
+    return ReactDOM.createPortal(children, document.body);
+  }
+  // Comments count logic removed
+
+  return (
+    <div>
+      {posts.map((post, idx) => {
+        const liked = post.likesArr && post.likesArr.includes(user.uid);
+        const isOwner = post.userid === (user.email ? user.email.split('@')[0] : user.uid);
+        return (
+          <div className="post" key={post.id} style={{position:'relative', overflow:'visible', zIndex:0}}>
+            <div className="post-header" style={{justifyContent:'space-between', position:'relative', zIndex:0}}>
+              <div style={{display:'flex',alignItems:'center'}}>
+                <img src={post.avatar} alt={post.username} />
+                <div>
+                  <div style={{fontWeight:600, fontSize:17, marginBottom:2}}>{post.username}</div>
+                  <div style={{color:'#888',fontWeight:400,fontSize:13,marginBottom:2}}>@{post.userid}</div>
+                  <div style={{color:'#888',fontSize:13,marginTop:1}}>{post.location}</div>
+                </div>
+              </div>
+              {/* 3-dot menu */}
+              <div style={{position:'absolute',top:'50%',right:'12px',transform:'translateY(-50%)'}}>
+                <button
+                  onClick={e => {
+                    setMenuOpenIdx(menuOpenIdx === idx ? null : idx);
+                    if (menuOpenIdx !== idx) {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      setMenuPosition({
+                        top: rect.bottom + 8,
+                        left: rect.right - 140 // width of dropdown
+                      });
+                    }
+                  }}
+                  style={{background:'none',border:'none',cursor:'pointer',padding:8,display:'flex',alignItems:'center',justifyContent:'center'}}
+                  title="Options"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+                </button>
+              </div>
+              {menuOpenIdx === idx && (
+                <DropdownPortal>
+                  <div style={{position:'fixed',top:menuPosition.top,left:menuPosition.left,width:140,background:'#fff',border:'1px solid #eee',borderRadius:8,boxShadow:'0 2px 8px #ececec',zIndex:99999}}>
+                    {isOwner && (
+                      <div
+                        onClick={async () => {
+                          await db.collection('posts').doc(post.id).delete();
+                          setMenuOpenIdx(null);
+                        }}
+                        style={{padding:'8px 18px',cursor:'pointer',color:'#e74c3c',fontWeight:500}}
+                      >
+                        Delete
+                      </div>
+                    )}
                   </div>
-                </div>
-                {/* 3-dot menu */}
-                <div style={{position:'absolute',top:'50%',right:'12px',transform:'translateY(-50%)'}}>
-                  <button
-                    onClick={e => {
-                      setMenuOpenIdx(menuOpenIdx === idx ? null : idx);
-                      if (menuOpenIdx !== idx) {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        setMenuPosition({
-                          top: rect.bottom + 8,
-                          left: rect.right - 140 // width of dropdown
-                        });
-                      }
-                    }}
-                    style={{background:'none',border:'none',cursor:'pointer',padding:8,display:'flex',alignItems:'center',justifyContent:'center'}}
-                    title="Options"
-                  >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
-                  </button>
-                </div>
-                {menuOpenIdx === idx && (
-                  <DropdownPortal>
-                    <div style={{position:'fixed',top:menuPosition.top,left:menuPosition.left,width:140,background:'#fff',border:'1px solid #eee',borderRadius:8,boxShadow:'0 2px 8px #ececec',zIndex:99999}}>
-                      {isOwner && (
-                        <div
-                          onClick={async () => {
-                            await db.collection('posts').doc(post.id).delete();
-                            setMenuOpenIdx(null);
-                          }}
-                          style={{padding:'8px 18px',cursor:'pointer',color:'#e74c3c',fontWeight:500}}
-                        >
-                          Delete
-                        </div>
-                      )}
-                    </div>
-                  </DropdownPortal>
-                )}
-              </div>
-              {post.type === 'picture' && post.image && (
-                <img className="post-image" src={post.image} alt="post" />
+                </DropdownPortal>
               )}
-              {post.type === 'text' && post.text && (
-                <div className="post-caption" style={{fontSize:18,margin:'24px 0',textAlign:'center',color:'#6c47ff',fontWeight:600}}>{post.text}</div>
-              )}
-              <div className="post-divider"></div>
-              <div className="post-content">
-                {post.type === 'picture' && <div className="post-caption">{post.caption}</div>}
-                <div className="post-tags">
-                  {post.tags.map(tag => (
-                    <span className="post-tag" key={tag}>#{tag}</span>
-                  ))}
-                </div>
-              </div>
-              <div className="post-actions">
-                <button className="post-action-btn modern-action" title={liked ? "Unlike" : "Like"} onClick={() => handleLike(post)}>
-                  <svg className="icon" viewBox="0 0 24 24" width="28" height="28" fill={liked ? '#e53935' : '#b0b8c1'}>
-                    <path d="M12 21.35c-.45 0-.9-.15-1.27-.44C6.1 17.36 2 13.77 2 9.5 2 6.42 4.42 4 7.5 4c1.74 0 3.41.81 4.5 2.09C13.09 4.81 14.76 4 16.5 4 19.58 4 22 6.42 22 9.5c0 4.27-4.1 7.86-8.73 11.41-.37.29-.82.44-1.27.44z"/>
-                  </svg>
-                </button>
-                <button className="post-action-btn modern-action" title="Comment">
-                  <svg className="icon" viewBox="0 0 24 24" width="28" height="28" fill="#1976d2">
-                    <path d="M20 17.17V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10l4 4z"/>
-                  </svg>
-                </button>
-                <span className="post-likes">{post.likes ? post.likes : 0} likes</span>
+            </div>
+            {post.type === 'picture' && post.image && (
+              <img className="post-image" src={post.image} alt="post" />
+            )}
+            {post.type === 'text' && post.text && (
+              <div className="post-caption" style={{fontSize:18,margin:'24px 0',textAlign:'center',color:'#6c47ff',fontWeight:600}}>{post.text}</div>
+            )}
+            <div className="post-divider"></div>
+            <div className="post-content">
+              {post.type === 'picture' && <div className="post-caption">{post.caption}</div>}
+              <div className="post-tags">
+                {post.tags.map(tag => (
+                  <span className="post-tag" key={tag}>#{tag}</span>
+                ))}
               </div>
             </div>
-          );
-        })}
-      </div>
-    );
-  }
+            <div className="post-actions" style={{display:'flex',alignItems:'center',gap:18}}>
+              <button className="post-action-btn modern-action" title={liked ? "Unlike" : "Like"} onClick={() => handleLike(post)} style={{display:'flex',alignItems:'center',gap:6,background:'none',border:'none',boxShadow:'none',borderRadius:0}}>
+                <img 
+                src={liked ? "images/navbar/heartred.png" : "images/navbar/heart.png"} 
+                alt={liked ? "Unlike" : "Like"} 
+                style={{ width: 22, height: 22, objectFit: 'contain', display: 'block', filter: liked ? undefined : 'grayscale(1) brightness(1.5)' }}
+                />
+                <span style={{fontSize:15,color:'#888',fontWeight:500}}>{post.likes ? post.likes : 0}</span>
+              </button>
+              <button className="post-action-btn modern-action" title="Comment" onClick={async () => {
+                // Fetch comment count when opening modal
+                const snapshot = await db.collection('posts').doc(post.id).collection('comments').get();
+                setCommentCounts(prev => ({ ...prev, [post.id]: snapshot.size }));
+                setCommentModalPost(post);
+              }} style={{display:'flex',alignItems:'center',gap:6,background:'none',border:'none',boxShadow:'none',borderRadius:0}}>
+                <img 
+                  src="images/navbar/comment.png" 
+                  alt="Comment" 
+                  style={{ width: 22, height: 22, objectFit: 'contain', display: 'block' }}
+                />
+                <span style={{fontSize:15,color:'#888',fontWeight:500}}>{commentCounts[post.id] || 0}</span>
+              </button>
+            </div>
+          </div>
+        );
+      })}
+      {commentModalPost && <CommentModal post={commentModalPost} onClose={() => setCommentModalPost(null)} onCommentAdded={(postId, count) => setCommentCounts(prev => ({ ...prev, [postId]: count }))} />}
+    </div>
+  );
+}
 
   function ProfilePage({ user }) {
     const [photoUploading, setPhotoUploading] = useState(false);
