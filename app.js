@@ -699,6 +699,19 @@ function HomePage({ user, posts, loading }) {
   const [commentModalPost, setCommentModalPost] = useState(null);
   const [commentCounts, setCommentCounts] = useState({});
   const [menuOpenIdx, setMenuOpenIdx] = useState(null);
+
+  // Listen for comment counts for all posts in real time
+  React.useEffect(() => {
+    if (!posts || posts.length === 0) return;
+    const db = window.firebase.firestore();
+    const unsubscribes = posts.map(post =>
+      db.collection('posts').doc(post.id).collection('comments')
+        .onSnapshot(snapshot => {
+          setCommentCounts(prev => ({ ...prev, [post.id]: snapshot.size }));
+        })
+    );
+    return () => unsubscribes.forEach(unsub => unsub && unsub());
+  }, [posts]);
   const [menuPosition, setMenuPosition] = useState({top: 0, left: 0});
   // No isMobile check, always allow modal
   // Add keyframes for slide up
@@ -821,10 +834,7 @@ function HomePage({ user, posts, loading }) {
                 />
                 <span style={{fontSize:15,color:'#888',fontWeight:500}}>{post.likes ? post.likes : 0}</span>
               </button>
-              <button className="post-action-btn modern-action" title="Comment" onClick={async () => {
-                // Fetch comment count when opening modal
-                const snapshot = await db.collection('posts').doc(post.id).collection('comments').get();
-                setCommentCounts(prev => ({ ...prev, [post.id]: snapshot.size }));
+              <button className="post-action-btn modern-action" title="Comment" onClick={() => {
                 setCommentModalPost(post);
               }} style={{display:'flex',alignItems:'center',gap:6,background:'none',border:'none',boxShadow:'none',borderRadius:0}}>
                 <img 
